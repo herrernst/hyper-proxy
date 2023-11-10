@@ -66,6 +66,7 @@ use std::{
     future::Future,
     pin::Pin,
     task::{Context, Poll},
+	convert::TryFrom,
 };
 
 pub use stream::ProxyStream;
@@ -85,7 +86,7 @@ use openssl::ssl::{SslConnector as OpenSslConnector, SslMethod};
 #[cfg(feature = "openssl-tls")]
 use tokio_openssl::SslStream;
 #[cfg(feature = "rustls-base")]
-use webpki::DnsNameRef;
+use tokio_rustls::rustls::ServerName;
 
 type BoxError = Box<dyn std::error::Error + Send + Sync>;
 
@@ -470,11 +471,11 @@ where
 
                             #[cfg(feature = "rustls-base")]
                             Some(tls) => {
-                                let dnsref =
-                                    mtry!(DnsNameRef::try_from_ascii_str(&host).map_err(io_err));
+                                let server_name =
+                                    mtry!(ServerName::try_from(host.as_str()).map_err(io_err));
                                 let tls = TlsConnector::from(tls);
                                 let secure_stream =
-                                    mtry!(tls.connect(dnsref, tunnel_stream).await.map_err(io_err));
+                                    mtry!(tls.connect(server_name, tunnel_stream).await.map_err(io_err));
 
                                 Ok(ProxyStream::Secured(secure_stream))
                             }
