@@ -85,7 +85,7 @@ use openssl::ssl::{SslConnector as OpenSslConnector, SslMethod};
 #[cfg(feature = "openssl-tls")]
 use tokio_openssl::SslStream;
 #[cfg(feature = "rustls-base")]
-use webpki::DNSNameRef;
+use webpki::DnsNameRef;
 
 type BoxError = Box<dyn std::error::Error + Send + Sync>;
 
@@ -471,7 +471,7 @@ where
                             #[cfg(feature = "rustls-base")]
                             Some(tls) => {
                                 let dnsref =
-                                    mtry!(DNSNameRef::try_from_ascii_str(&host).map_err(io_err));
+                                    mtry!(DnsNameRef::try_from_ascii_str(&host).map_err(io_err));
                                 let tls = TlsConnector::from(tls);
                                 let secure_stream =
                                     mtry!(tls.connect(dnsref, tunnel_stream).await.map_err(io_err));
