@@ -14,7 +14,7 @@ license = "MIT"
 edition = "2018"
 
 [dependencies]
-tokio = { version = "1", features = ["io-std", "io-util"] }
+tokio = { version = ">=1.0.0, <1.30.0", features = ["io-std", "io-util"] }
 hyper = { version = "0.14", features = ["client"] }
 
 tower-service = "0.3"
@@ -35,7 +35,7 @@ webpki-roots = { version = "0.22", optional = true }
 headers = "0.3"
 
 [dev-dependencies]
-tokio = { version = "1.0", features = ["full"] }
+tokio = { version = ">=1.0.0, <1.30.0", features = ["full"] }
 hyper = { version = "0.14", features = ["client", "http1", "tcp"] }
 
 [features]
