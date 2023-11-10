@@ -4,7 +4,7 @@
 //! ```rust,no_run
 //! use hyper::{Client, Request, Uri, body::HttpBody};
 //! use hyper::client::HttpConnector;
-//! use futures_util::{TryFutureExt, TryStreamExt};
+//! use futures::{TryFutureExt, TryStreamExt};
 //! use hyper_proxy::{Proxy, ProxyConnector, Intercept};
 //! use headers::Authorization;
 //! use std::error::Error;
@@ -60,7 +60,7 @@ mod tunnel;
 use http::header::{HeaderMap, HeaderName, HeaderValue};
 use hyper::{service::Service, Uri};
 
-use futures_util::future::TryFutureExt;
+use futures::future::TryFutureExt;
 use std::{fmt, io, sync::Arc};
 use std::{
     future::Future,
@@ -172,7 +172,7 @@ impl<F: Fn(Option<&str>, Option<&str>, Option<u16>) -> bool + Send + Sync + 'sta
     }
 }
 
-/// A Proxy struct
+/// A Proxy strcut
 #[derive(Clone, Debug)]
 pub struct Proxy {
     intercept: Intercept,
@@ -442,7 +442,7 @@ where
         if let (Some(p), Some(host)) = (self.match_proxy(&uri), uri.host()) {
             if uri.scheme() == Some(&http::uri::Scheme::HTTPS) || p.force_connect {
                 let host = host.to_owned();
-                let port = uri.port_u16().unwrap_or(if uri.scheme() == Some(&http::uri::Scheme::HTTP) { 80 } else { 443 });
+                let port = uri.port_u16().unwrap_or(443);
                 let tunnel = tunnel::new(&host, port, &p.headers);
                 let connection =
                     proxy_dst(&uri, &p.uri).map(|proxy_url| self.connector.call(proxy_url));
@@ -509,7 +509,7 @@ where
                             .map_ok(ProxyStream::Regular)
                             .map_err(|err| io_err(err.into())),
                     ),
-                    Err(err) => Box::pin(futures_util::future::err(io_err(err))),
+                    Err(err) => Box::pin(futures::future::err(io_err(err))),
                 }
             }
         } else {

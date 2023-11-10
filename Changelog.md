@@ -7,6 +7,8 @@
   - perf: A code change that improves performance
   - test: Adding missing tests
   - chore: Changes to the build process or auxiliary tools/libraries/documentation
+## 0.9.0
+- fix: fix compilation if -no-default-features
 
 ## 0.9.0
 - feat: upgrade to tokio 1.0
