@@ -66,7 +66,6 @@ use std::{
     future::Future,
     pin::Pin,
     task::{Context, Poll},
-	convert::TryFrom,
 };
 
 pub use stream::ProxyStream;
@@ -79,6 +78,8 @@ use native_tls::TlsConnector as NativeTlsConnector;
 use tokio_native_tls::TlsConnector;
 #[cfg(feature = "rustls-base")]
 use tokio_rustls::TlsConnector;
+#[cfg(feature = "rustls-base")]
+use std::convert::TryFrom;
 
 use headers::{authorization::Credentials, Authorization, HeaderMapExt, ProxyAuthorization};
 #[cfg(feature = "openssl-tls")]
