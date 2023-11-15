@@ -75,12 +75,12 @@ use tokio::io::{AsyncRead, AsyncWrite};
 #[cfg(feature = "tls")]
 use native_tls::TlsConnector as NativeTlsConnector;
 
+#[cfg(feature = "rustls-base")]
+use std::convert::TryFrom;
 #[cfg(feature = "tls")]
 use tokio_native_tls::TlsConnector;
 #[cfg(feature = "rustls-base")]
 use tokio_rustls::TlsConnector;
-#[cfg(feature = "rustls-base")]
-use std::convert::TryFrom;
 
 use headers::{authorization::Credentials, Authorization, HeaderMapExt, ProxyAuthorization};
 #[cfg(feature = "openssl-tls")]
@@ -294,32 +294,32 @@ impl<C> ProxyConnector<C> {
         let mut root_certs = tokio_rustls::rustls::RootCertStore::empty();
         #[cfg(feature = "rustls")]
         {
-			
-		    for cert in rustls_native_certs::load_native_certs().expect("could not load platform certs") {
-		        root_certs.add(&tokio_rustls::rustls::Certificate(cert.0)).unwrap();
-		    }
-
+            for cert in
+                rustls_native_certs::load_native_certs().expect("could not load platform certs")
+            {
+                root_certs
+                    .add(&tokio_rustls::rustls::Certificate(cert.0))
+                    .unwrap();
+            }
         }
 
         #[cfg(feature = "rustls-webpki")]
         {
             // maybe improve, see https://github.com/rustls/rustls/blob/main/rustls/src/webpki/verify.rs#L26
             // or https://github.com/rustls/rustls/blob/main/rustls/src/verify.rs#L83
-            root_certs
-		    	.add_trust_anchors(webpki_roots::TLS_SERVER_ROOTS.0.iter().map(|ta| {
-		              tokio_rustls::rustls::OwnedTrustAnchor::from_subject_spki_name_constraints(
-		                  ta.subject,
-		                  ta.spki,
-		                  ta.name_constraints,
-		              )
-		          }));
-
+            root_certs.add_trust_anchors(webpki_roots::TLS_SERVER_ROOTS.0.iter().map(|ta| {
+                tokio_rustls::rustls::OwnedTrustAnchor::from_subject_spki_name_constraints(
+                    ta.subject,
+                    ta.spki,
+                    ta.name_constraints,
+                )
+            }));
         }
 
         let config = tokio_rustls::rustls::ClientConfig::builder()
-		    .with_safe_defaults()
-		    .with_root_certificates(root_certs)
-		    .with_no_client_auth();
+            .with_safe_defaults()
+            .with_root_certificates(root_certs)
+            .with_no_client_auth();
 
         let cfg = Arc::new(config);
         let tls = TlsConnector::from(cfg);
@@ -491,8 +491,10 @@ where
                                 let server_name =
                                     mtry!(ServerName::try_from(host.as_str()).map_err(io_err));
                                 let tls = TlsConnector::from(tls);
-                                let secure_stream =
-                                    mtry!(tls.connect(server_name, tunnel_stream).await.map_err(io_err));
+                                let secure_stream = mtry!(tls
+                                    .connect(server_name, tunnel_stream)
+                                    .await
+                                    .map_err(io_err));
 
                                 Ok(ProxyStream::Secured(secure_stream))
                             }
