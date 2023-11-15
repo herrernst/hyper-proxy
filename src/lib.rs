@@ -303,6 +303,8 @@ impl<C> ProxyConnector<C> {
 
         #[cfg(feature = "rustls-webpki")]
         {
+            // maybe improve, see https://github.com/rustls/rustls/blob/main/rustls/src/webpki/verify.rs#L26
+            // or https://github.com/rustls/rustls/blob/main/rustls/src/verify.rs#L83
             root_certs
 		    	.add_trust_anchors(webpki_roots::TLS_SERVER_ROOTS.0.iter().map(|ta| {
 		              tokio_rustls::rustls::OwnedTrustAnchor::from_subject_spki_name_constraints(
