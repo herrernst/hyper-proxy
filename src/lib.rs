@@ -294,6 +294,8 @@ impl<C> ProxyConnector<C> {
         let mut root_certs = tokio_rustls::rustls::RootCertStore::empty();
         #[cfg(feature = "rustls")]
         {
+            // TODO maybe also check certs before adding?
+            // https://github.com/wg/hyper-proxy/blob/1d86e89f30f7cbcb468dec15e75f9f55a999d2e9/src/lib.rs#L295
             for cert in
                 rustls_native_certs::load_native_certs().expect("could not load platform certs")
             {
