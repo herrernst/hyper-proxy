@@ -437,7 +437,7 @@ where
     type Error = io::Error;
     type Future = Pin<Box<dyn Future<Output = Result<Self::Response, Self::Error>> + Send>>;
 
-    fn call(&mut self, uri: Uri) -> Self::Future {
+    fn call(&self, uri: Uri) -> Self::Future {
         if let (Some(p), Some(host)) = (self.match_proxy(&uri), uri.host()) {
             if uri.scheme() == Some(&hyper::http::uri::Scheme::HTTPS) || p.force_connect {
                 let host = host.to_owned();
