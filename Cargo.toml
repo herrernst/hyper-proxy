@@ -11,7 +11,7 @@ readme = "README.md"
 keywords = ["hyper", "proxy", "tokio", "ssl"]
 categories = ["web-programming::http-client", "asynchronous", "authentication"]
 license = "MIT"
-edition = "2018"
+edition = "2021"
 
 [dependencies]
 tokio = { version = "1", features = ["io-std", "io-util"] }
