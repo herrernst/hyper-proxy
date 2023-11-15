@@ -65,7 +65,6 @@ use std::{fmt, io, sync::Arc};
 use std::{
     future::Future,
     pin::Pin,
-    task::{Context, Poll},
 };
 
 pub use stream::ProxyStream;
@@ -438,23 +437,15 @@ where
     type Error = io::Error;
     type Future = Pin<Box<dyn Future<Output = Result<Self::Response, Self::Error>> + Send>>;
 
-    fn poll_ready(&mut self, cx: &mut Context<'_>) -> Poll<Result<(), io::Error>> {
-        match self.connector.poll_ready(cx) {
-            Poll::Ready(Ok(())) => Poll::Ready(Ok(())),
-            Poll::Ready(Err(e)) => Poll::Ready(Err(io_err(e.into()))),
-            Poll::Pending => Poll::Pending,
-        }
-    }
-
     fn call(&mut self, uri: Uri) -> Self::Future {
         if let (Some(p), Some(host)) = (self.match_proxy(&uri), uri.host()) {
-            if uri.scheme() == Some(&http::uri::Scheme::HTTPS) || p.force_connect {
+            if uri.scheme() == Some(&hyper::http::uri::Scheme::HTTPS) || p.force_connect {
                 let host = host.to_owned();
                 let port = uri.port_u16().unwrap_or(443);
                 let tunnel = tunnel::new(&host, port, &p.headers);
                 let connection =
                     proxy_dst(&uri, &p.uri).map(|proxy_url| self.connector.call(proxy_url));
-                let tls = if uri.scheme() == Some(&http::uri::Scheme::HTTPS) {
+                let tls = if uri.scheme() == Some(&hyper::http::uri::Scheme::HTTPS) {
                     self.tls.clone()
                 } else {
                     None

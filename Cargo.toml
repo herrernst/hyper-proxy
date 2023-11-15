@@ -15,12 +15,13 @@ edition = "2018"
 
 [dependencies]
 tokio = { version = "1", features = ["io-std", "io-util"] }
-hyper = { version = "0.14", features = ["client"] }
+hyper = { version = "1", features = ["client"] }
 
 tower-service = "0.3"
 http = "0.2"
 futures = "0.3"
 bytes = "1.0"
+hyper-util = { git = "https://github.com/hyperium/hyper-util.git", features = ["client"] }
 hyper-tls = { version = "0.5.0", optional = true }
 tokio-native-tls = { version = "0.3.0", optional = true }
 native-tls = { version = "0.2", optional = true }
@@ -35,8 +36,8 @@ webpki-roots = { version = "0.22", optional = true }
 headers = "0.3"
 
 [dev-dependencies]
-tokio = { version = "1.0", features = ["full"] }
-hyper = { version = "0.14", features = ["client", "http1", "tcp"] }
+tokio = { version = "1", features = ["full"] }
+hyper = { version = "1", features = ["client", "http1"] }
 
 [features]
 openssl-tls = ["openssl", "tokio-openssl"]
