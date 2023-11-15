@@ -302,7 +302,14 @@ impl<C> ProxyConnector<C> {
         #[cfg(feature = "rustls-webpki")]
         {
             root_certs
-                .add_server_trust_anchors(&webpki_roots::TLS_SERVER_ROOTS);
+		    	.add_trust_anchors(webpki_roots::TLS_SERVER_ROOTS.0.iter().map(|ta| {
+		              tokio_rustls::rustls::OwnedTrustAnchor::from_subject_spki_name_constraints(
+		                  ta.subject,
+		                  ta.spki,
+		                  ta.name_constraints,
+		              )
+		          }));
+
         }
 
         let config = tokio_rustls::rustls::ClientConfig::builder()
